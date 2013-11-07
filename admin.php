@@ -58,16 +58,25 @@ function geoprecious_settings_page(){
 */
 function geoprecious_activation(){
 	global $wpdb;
-	$schema = "CREATE TABLE `geoprecious` (
-				`id` int(11) unsigned NOT NULL AUTO_INCREMENT,
-				`blog_id` int(11) DEFAULT NULL,
-				`post_id` int(11) DEFAULT NULL,
-				`user_id` int(11) DEFAULT NULL,
-				`term_taxonomy_id` int(11) DEFAULT NULL,
-				`geo` geometry DEFAULT NULL,
-				`stamp` int(16) DEFAULT NULL,
-			   PRIMARY KEY (`id`)
-			   ) ENGINE=InnoDB DEFAULT CHARSET=latin1";
-			   
-	$wpdb->query( $schema );
+	// create table
+	$sql = "SHOW TABLES LIKE 'geoprecious'";
+	$exists = $wpdb->get_var( $sql );
+	
+	if( !$exists ){
+		$schema = "CREATE TABLE `geoprecious` (
+					`id` int(11) unsigned NOT NULL AUTO_INCREMENT,
+					`blog_id` int(11) DEFAULT NULL,
+					`post_id` int(11) DEFAULT NULL,
+					`user_id` int(11) DEFAULT NULL,
+					`term_taxonomy_id` int(11) DEFAULT NULL,
+					`geo` geometry DEFAULT NULL,
+					`stamp` int(16) DEFAULT NULL,
+				   PRIMARY KEY (`id`)
+				   ) ENGINE=InnoDB DEFAULT CHARSET=latin1";
+		$wpdb->query( $schema );
+	}
+	
+	// setup rewrite rule
+	add_rewrite_rule( '^geo-api$', 'index.php?controller=geo-api', 'top' );
+	flush_rewrite_rules();
 }

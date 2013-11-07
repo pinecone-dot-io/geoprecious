@@ -67,6 +67,9 @@ directory take precedence. For example, `/assets/screenshot-1.png` would win ove
 
 == Changelog ==
 
+= 0.0.2 =
+* Geo API routing.
+
 = 0.0.1 =
 * Initial commit, creates db table, no functionality.
 
