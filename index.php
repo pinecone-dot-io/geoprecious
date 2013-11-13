@@ -4,40 +4,48 @@ Plugin Name: GeoPrecious
 Plugin URI: 
 Description: 
 Author: 
-Version: 0.0.2
+Version: 0.0.3
 Author URI:
 */
+
+// @TODO PHP version check
+namespace GeoPrecious;
+
+if( !defined('GEOPRECIOUS_PLUGIN_DIR') )
+	define( 'GEOPRECIOUS_PLUGIN_DIR', plugins_url('', __FILE__) );
 
 if( is_admin() )
 	require dirname( __FILE__ ).'/admin.php';
 
+require dirname( __FILE__ ).'/model.php';
+
 /*
 *
 */
-function geoprecious_api(){
+function geoprecious_api( WP_Query $wp_query ){
 	ddbug( $_POST );
 }
 
 /*
-*
+*	adds support `for controller` query var for api
 *	attached to `init` action
 */
-function geoprecious_init(){
+function init(){
 	add_rewrite_tag( '%controller%', '([^&]+)' );
 }
-add_action( 'init', 'geoprecious_init' );
+add_action( 'init', __NAMESPACE__.'\init' );
 
 /*
-*
+*	catched api in url and routes
 *	attached to `pre_get_posts` filter
 */
-function geoprecious_pre_get_posts( WP_Query $wp_query ){
+function pre_get_posts( \WP_Query $wp_query ){
 	if( isset($wp_query->query_vars['controller']) && $wp_query->query_vars['controller'] == 'geo-api' )
-		geoprecious_api();
+		geoprecious_api( $wp_query );
 		
 	return $wp_query;
 }
-add_filter( 'pre_get_posts', 'geoprecious_pre_get_posts' );
+add_filter( 'pre_get_posts', __NAMESPACE__.'\pre_get_posts' );
 
 /*
 *

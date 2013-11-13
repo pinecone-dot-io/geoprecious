@@ -1,57 +1,113 @@
 <?php
 
-add_action( 'admin_menu', 'geoprecious_settings_register' );
-add_action( 'add_meta_boxes', 'geoprecious_meta_box_register' );
+namespace GeoPrecious;
+
+add_action( 'admin_menu', __NAMESPACE__.'\settings_register' );
+add_action( 'add_meta_boxes', __NAMESPACE__.'\meta_box_register' );
 
 /*
 *
 */
-function geoprecious_meta_box_register() {
+function meta_box_register() {
 	foreach( get_post_types() as $screen ) {
         add_meta_box(
             'geoprecious_metabox',
             'GeoPrecious',
-            'geoprecious_meta_box_render',
+            __NAMESPACE__.'\meta_box_render',
             $screen
         );
     }
 }
 
-function geoprecious_meta_box_render(){
+/*
+*	callback for `meta_box_register`
+*	post.php meta box
+*/
+function meta_box_render(){
+	geoprecious_register_admin_base();
+	
+	global $wpdb;
+	$sql = $wpdb->prepare( "SELECT id, ASTEXT( geo ) AS `geo`, `stamp` 
+							FROM geoprecious 
+							WHERE blog_id = %d 
+							AND post_id = %d
+							ORDER BY stamp DESC, id DESC", 1, 1 );
+	$res = $wpdb->get_results( $sql );
+	$data = map_to_geojson( $res );
+
+	$vars = (object) array(
+		'data' => $data
+	);
+	echo geoprecious_render( 'admin/post', $vars );
+}
+
+/*
+*	show map in eser edit profile.php
+*	@param WP_User
+*/
+function geoprecious_profile( WP_User $wp_user ){
+	//ddbug( $profileuser );
+	
+	geoprecious_register_admin_base();
+	
+	$vars = (object) array(
+		'data' => $wp_user->data
+	);
+	echo geoprecious_render( 'admin/profile', $vars );
+}
+add_action( 'show_user_profile', 'geoprecious_profile', 10, 1 );
+
+/*
+*
+*/
+function geoprecious_register_admin_base(){
 	wp_register_script( 'geoprecious-leaflet', 'http://cdn.leafletjs.com/leaflet-0.6.4/leaflet.js' );
 	wp_enqueue_script( 'geoprecious-leaflet' );
 	
 	wp_register_style( 'geoprecious-leaflet', 'http://cdn.leafletjs.com/leaflet-0.6.4/leaflet.css' );
 	wp_enqueue_style( 'geoprecious-leaflet' );
 	
-	wp_register_script( 'geoprecious-admin-post', plugins_url('admin-post.js', __FILE__) );
+	wp_register_script( 'geoprecious-admin-post', GEOPRECIOUS_PLUGIN_URL.'/public/admin/index.js' );
 	wp_enqueue_script( 'geoprecious-admin-post' );
 	
-	wp_register_style( 'geoprecious-admin-post', plugins_url('admin-post.css', __FILE__) );
+	wp_register_style( 'geoprecious-admin-post', GEOPRECIOUS_PLUGIN_URL.'/public/admin/index.css' );
 	wp_enqueue_style( 'geoprecious-admin-post' );
-	
-	$vars = (object) array();
-	echo geoprecious_render( 'admin-post', $vars );
 }
 
 /*
 *	attached to `admin_menu` action
 */
-function geoprecious_settings_register() {
+function settings_register() {
 	add_options_page( 'GeoPrecious', 'GeoPrecious', 
-					  'manage_options', 'geoprecious', 'geoprecious_settings_page' );
+					  'manage_options', 'geoprecious', __NAMESPACE__.'\settings_page' );
 }
 
 /*
 *
 */
-function geoprecious_settings_page(){
+function settings_page(){
 	$vars = (object) array();
 	
 	$vars->post_types = get_post_types( array(), 'object' );
 	
-	echo geoprecious_render( 'admin-settings', $vars );
+	echo geoprecious_render( 'admin/settings', $vars );
 }
+
+/*
+*
+*	@param object
+*	@param string
+*	@TODO do this on all/config taxonomies
+*/
+function taxonomy_edit_form( $tag, $taxonomy ){
+	//dbug( func_get_args() );
+	geoprecious_register_admin_base();
+
+	$vars = (object) array();
+
+	echo geoprecious_render( 'admin/edit-tags', $vars );
+}
+add_action( /*$taxonomy . */ 'category_edit_form', __NAMESPACE__.'\taxonomy_edit_form', 10, 2 );
 
 /*
 *
