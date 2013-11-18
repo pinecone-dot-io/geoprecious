@@ -1,25 +1,51 @@
 <?php
 
 /*
+*	@param array db result
+*/
+function bounds( $res ){
+	$res = array_map( function($r){
+		preg_match_all( '/[\-0-9.]+[\-0-9.]+/', $r->geo, $coords );
+		return array_map( 'floatval', $coords[0] );
+	}, $res );
+
+	$lats = array_map( function($r){ 
+		return $r[0];
+	}, $res );
+
+	$lngs = array_map( function($r){ 
+		return $r[1];
+	}, $res );
+
+	//ddbug( $lngs );
+
+	$bounds = array(
+		array( min($lats), min($lngs) ), // sw
+		array( max($lats), max($lngs) )  // ne
+	);
+
+	return $bounds;
+}
+
+/*
 *
 *	@param array db result
 */
 function map_to_geojson( $res ){
-	$json = array();
-
-	
+	$json = array(
+		'type' => 'FeatureCollection',
+		'features' => array()
+	);
 
 	// http://leafletjs.com/examples/geojson.html
 	foreach( $res as $r ){
-		//dbug( $r->geo );
-
 		$geo = $r->geo;
 		$geo = preg_match_all( '/[\-0-9.]+[\-0-9.]+/', $geo, $coords );
 		$coords[0] = array_map( 'floatval', $coords[0] );
 
 		//dbug( $coords[0] );
-
-		$json[] = (object) array(
+		
+		$json['features'][] = (object) array(
 			'type' => 'Feature',
 			'properties' => (object) array(
 				'name' => 'name',
@@ -28,8 +54,9 @@ function map_to_geojson( $res ){
 			),
 			'geometry' => (object) array(
 				'type' => 'Point', 
-				'coordinates' => $coords[0]
-			)
+				'coordinates' => array_reverse( $coords[0] )
+			),
+			'id' => (int) $r->id
 		);
 	}
 
