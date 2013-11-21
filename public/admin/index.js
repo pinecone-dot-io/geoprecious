@@ -2,10 +2,10 @@
 
 /*
 *	defaults:
-*		api_key
+*		api_key		string
 *		bounds
 *		data
-*		map_id
+*		map_id		string
 */
 function geoprecious_admin( defaults ){
 	"use strict";
