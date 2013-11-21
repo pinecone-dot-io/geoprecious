@@ -1,5 +1,7 @@
 <?php
 
+namespace GeoPrecious;
+
 /*
 *	@param array db result
 */
@@ -17,12 +19,12 @@ function bounds( $res ){
 		return $r[1];
 	}, $res );
 
-	//ddbug( $lngs );
-
-	$bounds = array(
-		array( min($lats), min($lngs) ), // sw
-		array( max($lats), max($lngs) )  // ne
-	);
+	$bounds = array( 0, 1 );
+	
+	if( count($lats) && count($lngs) ){
+		$bounds[0] = array( min($lats), min($lngs) );	// sw
+		$bounds[1] = array( max($lats), max($lngs) );	// ne
+	}
 
 	return $bounds;
 }

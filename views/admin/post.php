@@ -4,7 +4,7 @@
 	// @TODO make dynamic
 	jQuery( document ).ready( function(){
 		new geoprecious_admin( {
-			api_key: '6cd994e708124b93976907fdd6e64e84',
+			api_key: '<?= $api_key; ?>',
 			bounds: <?= json_encode( $bounds ); ?>,
 			data: <?= json_encode( $data ); ?>,
 			map_id: 'map'

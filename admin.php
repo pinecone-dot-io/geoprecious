@@ -22,26 +22,30 @@ function meta_box_register() {
 /*
 *	callback for `meta_box_register`
 *	post.php meta box
+*	@param WP_Post
+*	@param array
+*	@return
 */
-function meta_box_render(){
+function meta_box_render( \WP_Post $post, array $args){
 	geoprecious_register_admin_base();
 	
-	global $wpdb;
+	global $blog_id, $wpdb;
 	$sql = $wpdb->prepare( "SELECT id, ASTEXT( geo ) AS `geo`, `stamp` 
 							FROM geoprecious 
 							WHERE blog_id = %d 
 							AND post_id = %d
-							ORDER BY stamp DESC, id DESC", 1, 1 );
+							ORDER BY stamp DESC, id DESC", $blog_id, $post->ID );
 	$res = $wpdb->get_results( $sql );
 
 	$bounds = bounds( $res );
 	$data = map_to_geojson( $res );
 
 	$vars = (object) array(
+		'api_key' => get_option( 'geoprecious_api_key' ),
 		'bounds' => $bounds,
 		'data' => $data
 	);
-	echo geoprecious_render( 'admin/post', $vars );
+	echo render( 'admin/post', $vars );
 }
 
 /*
@@ -56,7 +60,7 @@ function geoprecious_profile( WP_User $wp_user ){
 	$vars = (object) array(
 		'data' => $wp_user->data
 	);
-	echo geoprecious_render( 'admin/profile', $vars );
+	echo render( 'admin/profile', $vars );
 }
 add_action( 'show_user_profile', 'geoprecious_profile', 10, 1 );
 
@@ -108,7 +112,7 @@ function options_general(){
 	$vars->post_types = get_post_types( array(), 'object' );
 	$vars->wpnonce = wp_create_nonce( 'geoprecious-options-general' );
 	
-	echo geoprecious_render( 'admin/options-general', $vars );
+	echo render( 'admin/options-general', $vars );
 }
 
 /*
@@ -133,7 +137,7 @@ function taxonomy_edit_form( $tag, $taxonomy ){
 
 	$vars = (object) array();
 
-	echo geoprecious_render( 'admin/edit-tags', $vars );
+	echo render( 'admin/edit-tags', $vars );
 }
 add_action( /*$taxonomy . */ 'category_edit_form', __NAMESPACE__.'\taxonomy_edit_form', 10, 2 );
 
