@@ -1,6 +1,6 @@
 <?php
 
-namespace GeoPrecious;
+namespace geoprecious;
 
 /*
 *	@param array db result
@@ -65,3 +65,47 @@ function map_to_geojson( $res ){
 	return $json;
 }
 
+/*
+*	catched api in url and routes
+*	attached to `pre_get_posts` filter
+*/
+function pre_get_posts( \WP_Query &$wp_query ){
+	$wp_query->is_geoprecious_query = FALSE;
+	
+	if( isset($wp_query->query_vars['controller']) && $wp_query->query_vars['controller'] == 'geo-api' )
+		api( $wp_query );
+	
+	if( isset($wp_query->query_vars['orderby']) && $wp_query->query_vars['orderby'] == 'geocode' )
+		$wp_query->is_geoprecious_query = TRUE;
+			
+	return $wp_query;
+}
+add_filter( 'pre_get_posts', __NAMESPACE__.'\pre_get_posts' );
+
+/*
+*
+*/
+function activation(){
+	global $wpdb;
+	// create table
+	$sql = "SHOW TABLES LIKE 'geoprecious'";
+	$exists = $wpdb->get_var( $sql );
+	
+	if( !$exists ){
+		$schema = "CREATE TABLE `geoprecious` (
+					`id` int(11) unsigned NOT NULL AUTO_INCREMENT,
+					`blog_id` int(11) DEFAULT NULL,
+					`post_id` int(11) DEFAULT NULL,
+					`user_id` int(11) DEFAULT NULL,
+					`term_taxonomy_id` int(11) DEFAULT NULL,
+					`geo` geometry DEFAULT NULL,
+					`stamp` int(16) DEFAULT NULL,
+				   PRIMARY KEY (`id`)
+				   ) ENGINE=InnoDB DEFAULT CHARSET=latin1";
+		$wpdb->query( $schema );
+	}
+	
+	// setup rewrite rule
+	add_rewrite_rule( '^geo-api$', 'index.php?controller=geo-api', 'top' );
+	flush_rewrite_rules();
+}

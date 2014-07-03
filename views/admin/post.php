@@ -4,9 +4,9 @@
 	// @TODO make dynamic
 	jQuery( document ).ready( function(){
 		new geoprecious_admin( {
-			api_key: '<?= $api_key; ?>',
-			bounds: <?= json_encode( $bounds ); ?>,
-			data: <?= json_encode( $data ); ?>,
+			api_key: '<?php echo $api_key; ?>',
+			bounds: <?php echo json_encode( $bounds ); ?>,
+			data: <?php echo json_encode( $data ); ?>,
 			map_id: 'map'
 		} );
 	} );

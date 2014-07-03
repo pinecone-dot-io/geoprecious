@@ -1,10 +1,10 @@
 <div class="wrap geoprecious">
 	<h2>GeoPrecious</h2>
 	<form action="" method="post">
-		<input type="hidden" name="_wpnonce" value="<?= $wpnonce; ?>"/>
+		<input type="hidden" name="_wpnonce" value="<?php echo $wpnonce; ?>"/>
 		<fieldset>
-			<legend>API Key</legend>
-			<label><input type="text" name="api_key" value="<?= $api_key; ?>"/></label>
+			<legend>API Key <a href="https://www.mapbox.com">https://www.mapbox.com</a></legend>
+			<label><input type="text" name="api_key" value="<?php echo $api_key; ?>"/></label>
 		</fieldset>
 		
 		<fieldset>

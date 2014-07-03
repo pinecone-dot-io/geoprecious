@@ -1,6 +1,6 @@
 <?
 
-namespace GeoPrecious;
+namespace geoprecious;
 
 class Point{
 	private static $wpdb;

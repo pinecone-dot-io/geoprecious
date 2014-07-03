@@ -1,6 +1,15 @@
 <?php
 
-namespace GeoPrecious;
+namespace geoprecious;
+
+/*
+*	adds support `for controller` query var for api
+*	attached to `init` action
+*/
+function init(){
+	add_rewrite_tag( '%controller%', '([^&]+)' );
+}
+add_action( 'init', __NAMESPACE__.'\init' );
 
 /*
 *
