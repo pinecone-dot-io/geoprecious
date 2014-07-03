@@ -3,7 +3,9 @@
 namespace geoprecious;
 
 /*
+*	gets the sw most and ne most points from a set of points
 *	@param array db result
+*	@return array
 */
 function bounds( $res ){
 	$res = array_map( function($r){
@@ -56,10 +58,12 @@ function map_to_geojson( $res ){
 			),
 			'geometry' => (object) array(
 				'type' => 'Point', 
-				'coordinates' => array_reverse( $coords[0] )
+				'coordinates' => $coords[0]
 			),
 			'id' => (int) $r->id
 		);
+		
+		//ddbug($json);
 	}
 
 	return $json;

@@ -8,15 +8,20 @@ class Point{
 	private $acc;
 	private $lat;
 	private $lng;
+	
+	private $blog_id = 1;
+	private $post_id = 0;
 	private $stamp;
-	private $user_id;
+	private $user_id = 0;
 	
 	/*
 	*
 	*/
 	public function __construct(){
-		global $wpdb;
-		self::$wpdb = &$wpdb;
+		if( !self::$wpdb ){
+			global $wpdb;
+			self::$wpdb = &$wpdb;
+		}
 	}
 	
 	/*
@@ -24,9 +29,15 @@ class Point{
 	*/
 	public function insert(){
 		$sql = self::$wpdb->prepare( "INSERT INTO geoprecious
-									  ( user_id )
+									  ( blog_id, post_id, user_id, 
+									    geo )
 									  VALUES
-									  ( %d )", $this->user_id );
+									  ( %d, %d, %d, 
+									    POINT(%f, %f) )", 
+									  $this->blog_id, $this->post_id, $this->user_id,
+									  $this->lat, $this->lng );
+		//dbug($sql);
+		return self::$wpdb->query( $sql );
 	}
 	
 	/*
@@ -40,6 +51,15 @@ class Point{
 		$this->lat = (float) $lat;
 		$this->lng = (float) $lng;
 		$this->acc = (int) $acc;
+	}
+	
+	/*
+	*
+	*	@param int
+	*	@return
+	*/
+	public function setPostID( $post_id ){
+		$this->post_id = (int) $post_id;
 	}
 	
 	/*

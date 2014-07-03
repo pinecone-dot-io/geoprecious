@@ -66,6 +66,8 @@ directory take precedence. For example, `/assets/screenshot-1.png` would win ove
 2. This is the second screen shot
 
 == Changelog ==
+= 0.0.5 =
+* Saving point data on post edit page
 
 = 0.0.3 =
 * Base map on taxonomy pages

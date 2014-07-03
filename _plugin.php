@@ -4,7 +4,7 @@ Plugin Name: GeoPrecious
 Plugin URI: 
 Description: 
 Author: 
-Version: 0.0.4
+Version: 0.0.5
 Author URI:
 */
 
