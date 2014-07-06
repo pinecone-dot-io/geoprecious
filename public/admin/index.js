@@ -7,10 +7,10 @@
 *		data
 *		map_id		string
 */
-function geoprecious_admin( defaults ){
+function geoprecious_admin( config, defaults ){
 	"use strict";
 	
-	var map = L.map( defaults.map_id ).setView( [39.191,-96.591], 13 );
+	var map = L.map( defaults.map_id ).setView( geo_data.center, 13 );
 	var $map_points = jQuery( '#map-points' );
 	
 	/*
@@ -21,7 +21,7 @@ function geoprecious_admin( defaults ){
 		attribution: 'Map data &copy; <a href="http://openstreetmap.org">OpenStreetMap</a> contributors, ' +
 			'<a href="http://creativecommons.org/licenses/by-sa/2.0/">CC-BY-SA</a>, ' +
 			'Imagery © <a href="http://mapbox.com">Mapbox</a>',
-		id: defaults.api_key
+		id: config.api_key
 	} ).addTo( map );
 	
 	/*
@@ -61,21 +61,17 @@ function geoprecious_admin( defaults ){
 		var value = {
 			lat: defaults.data.features[i].geometry.coordinates[0],
 			lng: defaults.data.features[i].geometry.coordinates[1],
-			//stamp: e.originalEvent.timeStamp,
+			stamp: defaults.data.features[i].geometry.stamp,
 			type: 'point'
 		};
 		
 		insert_input( value );
 	}
-	
-	/*
-	L.geoJson( defaults.data, {
-	    style: {
-		    "color": "#ff7800",
-		    "weight": 5,
-		    "opacity": 0.65
-		}
-	} ).addTo( map );
-	*/
 };
+
+jQuery( document ).ready( function(){
+	// @TODO work this out
+	if( typeof(geo_data) != 'undefined' )
+		new geoprecious_admin( geo_config, geo_data );
+} );
 

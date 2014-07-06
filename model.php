@@ -7,20 +7,7 @@ namespace geoprecious;
 *	@param array db result
 *	@return array
 */
-function bounds( $res ){
-	$res = array_map( function($r){
-		preg_match_all( '/[\-0-9.]+[\-0-9.]+/', $r->geo, $coords );
-		return array_map( 'floatval', $coords[0] );
-	}, $res );
-
-	$lats = array_map( function($r){ 
-		return $r[0];
-	}, $res );
-
-	$lngs = array_map( function($r){ 
-		return $r[1];
-	}, $res );
-
+function bounds( $lats, $lngs ){
 	$bounds = array( 0, 1 );
 	
 	if( count($lats) && count($lngs) ){
@@ -29,6 +16,18 @@ function bounds( $res ){
 	}
 
 	return $bounds;
+}
+
+function center( $lats, $lngs ){
+	if( !count($lats) || !count($lngs) )
+		return array(
+			39.191, -96.591
+		);
+	else
+		return array(
+			array_sum( $lats ) / count( $lats ),
+			array_sum( $lngs ) / count( $lngs ),
+		);
 }
 
 /*
@@ -43,11 +42,7 @@ function map_to_geojson( $res ){
 
 	// http://leafletjs.com/examples/geojson.html
 	foreach( $res as $r ){
-		$geo = $r->geo;
-		$geo = preg_match_all( '/[\-0-9.]+[\-0-9.]+/', $geo, $coords );
-		$coords[0] = array_map( 'floatval', $coords[0] );
-
-		//dbug( $coords[0] );
+		//ddbug( $r->geo );
 		
 		$json['features'][] = (object) array(
 			'type' => 'Feature',
@@ -58,12 +53,11 @@ function map_to_geojson( $res ){
 			),
 			'geometry' => (object) array(
 				'type' => 'Point', 
-				'coordinates' => $coords[0]
+				'coordinates' => $r->geo->val,
+				'stamp' => $r->stamp
 			),
 			'id' => (int) $r->id
 		);
-		
-		//ddbug($json);
 	}
 
 	return $json;
@@ -97,15 +91,15 @@ function activation(){
 	
 	if( !$exists ){
 		$schema = "CREATE TABLE `geoprecious` (
-					`id` int(11) unsigned NOT NULL AUTO_INCREMENT,
-					`blog_id` int(11) DEFAULT NULL,
-					`post_id` int(11) DEFAULT NULL,
-					`user_id` int(11) DEFAULT NULL,
-					`term_taxonomy_id` int(11) DEFAULT NULL,
-					`geo` geometry DEFAULT NULL,
-					`stamp` int(16) DEFAULT NULL,
-				   PRIMARY KEY (`id`)
-				   ) ENGINE=InnoDB DEFAULT CHARSET=latin1";
+					  `id` int(11) unsigned NOT NULL AUTO_INCREMENT,
+					  `blog_id` int(11) NOT NULL DEFAULT '0',
+					  `post_id` int(11) NOT NULL DEFAULT '0',
+					  `user_id` int(11) NOT NULL DEFAULT '0',
+					  `term_taxonomy_id` int(11) NOT NULL DEFAULT '0',
+					  `stamp` int(16) NOT NULL DEFAULT '0',
+					  `geo` geometry DEFAULT NULL,
+					  PRIMARY KEY (`id`)
+					) ENGINE=InnoDB DEFAULT CHARSET=latin1;";
 		$wpdb->query( $schema );
 	}
 	

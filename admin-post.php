@@ -2,8 +2,6 @@
 
 namespace geoprecious;
 
-require __DIR__.'/lib/class-point.php';
-
 /*
 *
 */
@@ -27,25 +25,13 @@ add_action( 'add_meta_boxes', __NAMESPACE__.'\meta_box_register' );
 *	@return
 */
 function meta_box_render( \WP_Post $post, array $args){
-	register_admin_base();
-	
-	global $blog_id, $wpdb;
-	$sql = $wpdb->prepare( "SELECT id, ASTEXT( geo ) AS `geo`, `stamp` 
-							FROM geoprecious 
-							WHERE blog_id = %d 
-							AND post_id = %d
-							ORDER BY stamp DESC, id DESC", $blog_id, $post->ID );
-	$res = $wpdb->get_results( $sql );
+	$Collection = new Collection;
+	$Collection->setPostID( $post->ID );
+	$res = $Collection->get();
 
-	$bounds = bounds( $res );
-	$data = map_to_geojson( $res );
-
-	$vars = (object) array(
-		'api_key' => get_option( 'geoprecious_api_key' ),
-		'bounds' => $bounds,
-		'data' => $data
-	);
-	echo render( 'admin/post', $vars );
+	wp_localize_script( 'geoprecious-admin', 'geo_data', geo_data_format($res) );
+															   
+	echo render( 'admin/post-meta-box' );
 }
 
 /*
@@ -55,17 +41,17 @@ function meta_box_render( \WP_Post $post, array $args){
 *	@return
 */
 function save_post( $post_id, \WP_Post $wp_post ){
-	$geoprecious_data = $_POST['geoprecious_data'];
+	$geoprecious_data = post_geoprecious_data();
+	
+	$Collection = new Collection;
+	$Collection->setPostID( $post_id );
+	$Collection->get();
 	
 	foreach( $geoprecious_data as $data ){
-		$data = json_decode( stripslashes($data) );
-		//dbug($data,'$data');
-		
-		$Point = new Point;
-		$Point->setPoint( $data->lat, $data->lng );
-		$Point->setPostID( $post_id );
-		$Point->insert();
+		$Collection->addPoint( $data->lat, $data->lng, $data->stamp );
 	}
+	
+	$Collection->replace();
 	
 	//ddbug();
 }

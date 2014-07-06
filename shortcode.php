@@ -3,8 +3,12 @@
 namespace geoprecious;
 
 /*
-*
+*	callback for [geoprecious] shortcode
 *	@param array
+*		center
+*		class
+*		container
+*		id
 *	@param
 *	@param string
 *	@return
@@ -23,10 +27,10 @@ function shortcode( $atts, $content = NULL, $tag = '' ){
 		'id' => 'map'
 	);
 	
-	$atts = wp_parse_args( $atts, $defaults );
+	$atts = (object) wp_parse_args( $atts, $defaults );
 	
 	$vars = (object) array(
-		'atts' => (object) $atts,
+		'atts' => $atts,
 		'content' => $content
 	);
 	
