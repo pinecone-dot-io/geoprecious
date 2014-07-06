@@ -30,9 +30,9 @@ class Collection extends Core{
 	public function get(){
 		$sql = parent::$wpdb->prepare( "SELECT *, ASTEXT( geo ) AS `geo` FROM geoprecious 
 										WHERE blog_id = %d
-										AND post_id = %d
-										AND user_id = %d
-										AND term_taxonomy_id = %d
+											AND post_id = %d
+											AND user_id = %d
+											AND term_taxonomy_id = %d
 										ORDER BY stamp ASC", 
 										$this->blog_id, $this->post_id, $this->user_id, $this->term_taxonomy_id );
 		$res = parent::$wpdb->get_results( $sql );

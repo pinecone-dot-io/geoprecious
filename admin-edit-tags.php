@@ -4,6 +4,20 @@ namespace geoprecious;
 
 /*
 *
+*/
+function register_taxonomies(){
+	$taxonomies = get_taxonomies( '', 'names' ); 
+	
+	foreach( $taxonomies as $taxonomy ){
+		add_action( $taxonomy.'_edit_form', __NAMESPACE__.'\taxonomy_edit_form', 10, 2 );
+		add_action( 'edit_'.$taxonomy, __NAMESPACE__.'\taxonomy_edit_form_save', 10, 2 );
+	}
+}
+add_action( 'load-'.$file.'.php', __NAMESPACE__.'\register_taxonomies', 11 );
+
+/*
+*
+*	attached to `<$taxonomy>_edit_form` action
 *	@param object
 *	@param string
 *	@TODO do this on all/config taxonomies
@@ -17,15 +31,15 @@ function taxonomy_edit_form( $tag, $taxonomy ){
 	
 	echo render( 'admin/edit-tags' );
 }
-add_action( /*$taxonomy . */ 'category_edit_form', __NAMESPACE__.'\taxonomy_edit_form', 10, 2 );
 
 /*
 *
+*	attached to `edit_<$taxonomy>` action
 *	@param int
-*	@param string
+*	@param int
 *	@return
 */
-function taxonomy_edit_form_save( $tt_id, $taxonomy ){
+function taxonomy_edit_form_save( $term_id, $tt_id ){
 	$geoprecious_data = post_geoprecious_data();
 	
 	$Collection = new Collection;
@@ -38,4 +52,3 @@ function taxonomy_edit_form_save( $tt_id, $taxonomy ){
 	
 	$Collection->replace();
 }
-add_action( 'edit_term_taxonomy', __NAMESPACE__.'\taxonomy_edit_form_save', 10, 2 );

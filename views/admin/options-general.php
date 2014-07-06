@@ -1,5 +1,6 @@
 <div class="wrap geoprecious">
 	<h2>GeoPrecious</h2>
+	
 	<form action="" method="post">
 		<input type="hidden" name="_wpnonce" value="<?php echo $wpnonce; ?>"/>
 		<fieldset>
@@ -12,13 +13,16 @@
 			<label>All<input type="checkbox" name="post_type[all]"/></label>
 			<?php foreach( $post_types as $post_type ): ?>
 			<? //dbug($post_type); ?>
-			<label><?php echo $post_type->labels->name; ?><input type="checkbox" name="<?php echo $post_type->name; ?>"/></label>
+			<label><?php echo $post_type->labels->name; ?><input type="checkbox" name="post_type[<?php echo $post_type->name; ?>]"/></label>
 			<?php endforeach; ?>
 		</fieldset>
 		
 		<fieldset>
 			<legend>Taxonomies</legend>
 			<label>All<input type="checkbox" name="taxonomy[all]"/></label>
+			<?php foreach( $taxonomies as $taxonomy ): ?>
+			<label><?php echo $taxonomy; ?><input type="checkbox" name="taxonomy[<?php echo $taxonomy; ?>]"/></label>
+			<?php endforeach; ?>
 		</fieldset>
 		
 		<fieldset>

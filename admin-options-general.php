@@ -21,6 +21,7 @@ function options_general(){
 	
 	$vars->api_key = get_option( 'geoprecious_api_key' );
 	$vars->post_types = get_post_types( array(), 'object' );
+	$vars->taxonomies = get_taxonomies( '', 'names' );
 	$vars->wpnonce = wp_create_nonce( 'geoprecious-options-general' );
 	
 	echo render( 'admin/options-general', $vars );

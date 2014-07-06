@@ -8,7 +8,7 @@ function admin_bootstrap(){
 	
 	$pages = array(
 		'edit-tags.php' => 'edit-tags', 
-		'options-general.php' => 'options-general', 
+		//'options-general.php' => 'options-general', // settings_page_geoprecious
 		'post.php' => 'post', 
 		'post-new.php' => 'post', 
 		'profile.php' => 'user-edit',
@@ -24,6 +24,9 @@ function admin_bootstrap(){
 			register_admin_base();
 		} );
 	}
+	
+	// 
+	require __DIR__.'/admin-options-general.php';
 }
 add_action( 'plugins_loaded', __NAMESPACE__.'\admin_bootstrap' );
 
@@ -52,9 +55,9 @@ function register_admin_base(){
 	wp_localize_script( 'geoprecious-admin', 'geo_config', array('api_key' => get_option('geoprecious_api_key')) );
 	wp_enqueue_script( 'geoprecious-admin' );
 	
-	wp_register_style( 'geoprecious-admin-post', GEOPRECIOUS_PLUGIN_URL.'/public/admin/index.css',
+	wp_register_style( 'geoprecious-admin', GEOPRECIOUS_PLUGIN_URL.'/public/admin/index.css',
 						array(), GEOPRECIOUS_VERSION );
-	wp_enqueue_style( 'geoprecious-admin-post' );
+	wp_enqueue_style( 'geoprecious-admin' );
 }
 
 

@@ -70,8 +70,8 @@ function map_to_geojson( $res ){
 function pre_get_posts( \WP_Query &$wp_query ){
 	$wp_query->is_geoprecious_query = FALSE;
 	
-	if( isset($wp_query->query_vars['controller']) && $wp_query->query_vars['controller'] == 'geo-api' )
-		api( $wp_query );
+	//if( isset($wp_query->query_vars['controller']) && $wp_query->query_vars['controller'] == 'geo-api' )
+	//	api( $wp_query );
 	
 	if( isset($wp_query->query_vars['orderby']) && $wp_query->query_vars['orderby'] == 'geocode' )
 		$wp_query->is_geoprecious_query = TRUE;
@@ -104,6 +104,6 @@ function activation(){
 	}
 	
 	// setup rewrite rule
-	add_rewrite_rule( '^geo-api$', 'index.php?controller=geo-api', 'top' );
-	flush_rewrite_rules();
+	//add_rewrite_rule( '^geo-api$', 'index.php?controller=geo-api', 'top' );
+	//flush_rewrite_rules();
 }
