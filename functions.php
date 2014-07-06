@@ -31,6 +31,9 @@ function geo_data_format( $res ){
 *	@return array
 */
 function post_geoprecious_data(){
+	if( !isset($_POST['geoprecious_data']) )
+		return array();
+		
 	$data = stripslashes_deep( $_POST['geoprecious_data'] );
 	$data = array_map( 'json_decode', $data );
 	

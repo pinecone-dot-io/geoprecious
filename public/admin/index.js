@@ -10,7 +10,13 @@
 function geoprecious_admin( config, defaults ){
 	"use strict";
 	
-	var map = L.map( defaults.map_id ).setView( geo_data.center, 13 );
+	var map = L.map( defaults.map_id );
+	
+	if( defaults.data.features.length > 0 )
+		map.fitBounds( [defaults.bounds[0], defaults.bounds[1]] );
+	else 
+		map.setView( defaults.center, 13 );
+		
 	var $map_points = jQuery( '#map-points' );
 	
 	/*
