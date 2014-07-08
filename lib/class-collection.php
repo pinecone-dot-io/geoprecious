@@ -28,7 +28,7 @@ class Collection extends Core{
 	*	@return array
 	*/
 	public function get(){
-		$sql = parent::$wpdb->prepare( "SELECT *, ASTEXT( geo ) AS `geo` FROM geoprecious 
+		$sql = parent::$wpdb->prepare( "SELECT *, ASTEXT(geo) AS `geo` FROM geoprecious 
 										WHERE blog_id = %d
 											AND post_id = %d
 											AND user_id = %d
@@ -50,6 +50,7 @@ class Collection extends Core{
 			return $r;
 		}, $res );
 		
+		//dbug( $res, $sql );
 		return $res;
 	}
 	

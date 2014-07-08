@@ -4,7 +4,8 @@ namespace geoprecious;
 
 /*
 *	gets the sw most and ne most points from a set of points
-*	@param array db result
+*	@param array
+*	@param array
 *	@return array
 */
 function bounds( $lats, $lngs ){
@@ -18,6 +19,12 @@ function bounds( $lats, $lngs ){
 	return $bounds;
 }
 
+/*
+*	
+*	@param array
+*	@param array
+*	@return array
+*/
 function center( $lats, $lngs ){
 	if( !count($lats) || !count($lngs) )
 		return array(

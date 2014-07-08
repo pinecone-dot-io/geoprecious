@@ -27,7 +27,7 @@ function geo_data_format( $res ){
 }
 
 /*
-*
+*	takes admin post data and turns inputs string values into json
 *	@return array
 */
 function post_geoprecious_data(){
